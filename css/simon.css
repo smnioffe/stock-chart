@@ -1,0 +1,17 @@
+	   body{
+      font-family: 'Encode Sans Semi Condensed', sans-serif;
+
+      }
+	  .clickable{
+	  cursor: pointer;
+	  }
+	  .displayNone{display:none !important;}
+	  .displayInline{display:inline;}	
+
+ .floatLeft{
+      float:left;}
+      .floatRight{
+      float:right;}	
+      .clearBoth{
+      clear:both;
+      }

@@ -1,0 +1,310 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Stocks</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:200,300,400,500,600,700|Saira+Semi+Condensed:200,300,400,500,600,700|Saira+Extra+Condensed:200,300,400,500,600,700" rel="stylesheet">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="css/simon.css"/>
+		<link rel="stylesheet" type="text/css" href="css/custom.css"/>
+    <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+		<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/helper.js"></script>
+
+    </head>
+    <body>    
+  
+ <div id="updateTS"></div>     
+<div id="stockChartWrapper"></div>
+
+<div class="fab" id="sortAlp"> a-z </div>
+	
+<div class="fab" id="sortRangePrice"> ↕ </div>   
+<div class="fab" id="sortDayRangePrice"> ↕<span>d</span> </div> 
+
+<div class="fab" id="sortPercentChange"> % </div> 
+<div class="fab" id="sortPutPremium"> $ </div>   
+	
+    </body>
+	<script>
+
+var parseDate = d3.timeParse("%Y-%m-%d");
+
+var margin = {top: 5, right: 50, bottom: 5, left: 200},
+    width = 400 - margin.left - margin.right,
+    height = 35 - margin.top - margin.bottom;
+
+var x = d3.scaleLinear().range([0, width]);//.scaleBand().rangeRound([0, width], .05).padding(0.1);
+
+var y = d3.scaleLinear().range([height, 0]);
+
+
+var sortOrder=1;
+
+d3.csv("data.csv", function(error, data) {
+
+   
+    
+
+//  x.domain(data.map(function(d) { return d.date; }));
+//   y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+
+data.forEach(function(d) {
+        d.date = parseDate(d.Date);
+        d.close = +d.Close;
+        d.high= +d.High;
+        d.low= +d.Low;
+        d.dayRange = +d.Close/d.High;
+        d.stock= d.Stock;
+        d.putWidth=+d.putWidth;
+        d.putPremium=+d.putPremium;
+        d.putIV=+d.putIV;
+        d.putPremiumPercent=(+d.putPremium/+d.putWidth);
+        d.dt=d.dt;
+    });
+
+var updatedDate= d3.max(data, function(d) { return d.dt; })
+
+$('#updateTS').text(updatedDate)
+
+var distinctStocks=d3.set(data.map(function(d){ return d.stock; })).values();
+
+distinctStocks.forEach(function(d) {
+makeSingleStock(d,data)
+
+})
+
+
+var $wrapper = $('#stockChartWrapper');
+
+
+function softByRange(){
+$wrapper.find('.stockChart').sort(function(a, b) {
+    return +a.getAttribute('data-rank') - +b.getAttribute('data-rank');
+})
+.appendTo($wrapper);
+}
+
+softByRange()
+
+$( "#sortAlp" ).click(function() {
+  //sortOrder =defined up top
+  
+  $wrapper.find('.stockChart').sort(function(a, b) {
+    return (a.getAttribute('data-stock')) > (b.getAttribute('data-stock')) ? 1 : -1;//a.getAttribute('data-stock'),b.getAttribute('data-stock');
+})
+.appendTo($wrapper);
+});
+
+$( "#sortRangePrice" ).click(function() {
+  softByRange()
+})
+
+
+$( "#sortDayRangePrice" ).click(function() {
+ 
+ $wrapper.find('.stockChart').sort(function(a, b) {
+   return +b.getAttribute('data-day-range') - +a.getAttribute('data-day-range');
+})
+.appendTo($wrapper);
+});
+
+
+$( "#sortPercentChange" ).click(function() {
+ 
+  $wrapper.find('.stockChart').sort(function(a, b) {
+    return +b.getAttribute('data-percent') - +a.getAttribute('data-percent');
+})
+.appendTo($wrapper);
+});
+
+$( "#sortPutPremium" ).click(function() {
+ 
+ $wrapper.find('.stockChart').sort(function(a, b) {
+   return +b.getAttribute('data-put-premium') - +a.getAttribute('data-put-premium');
+})
+.appendTo($wrapper);
+});
+
+
+});
+
+
+function makeSingleStock(stock,data){
+
+
+    var singleStockData=data.filter(function(d){ return d.stock == stock && d.close!==0.0; }).sort(function(a,b) {return d3.descending(a.date,b.date);})
+
+   var stockLow=d3.min(singleStockData, function(d) { return d.low; })
+   var stockHigh=d3.max(singleStockData, function(d) { return d.high; })
+
+    x.domain([stockLow,stockHigh]);
+
+    var n=0;
+
+     var lastDayData=data.filter(function(d){ return d.date == d3.max(singleStockData, function(d) { return d.date; }); })
+
+
+     var lastTenDays=singleStockData.slice(0,11)
+
+lastTenDays.forEach(function(d,i) {
+
+   d.prevClose=+singleStockData[i+1].close;
+   d.change=((d.close-d.prevClose)/d.close);
+
+});
+
+
+     var chartBlock=d3.select("#stockChartWrapper").append("div").attr("class","stockChart")
+     .attr("data-stock", function(d) {return stock})
+     .attr("data-rank", function(d) {return x(lastDayData[0].close)})
+     .attr("data-percent", function(d) {return lastTenDays[0].change})
+     .attr("data-put-premium", function(d) {return lastTenDays[0].putPremiumPercent})
+     .attr("data-day-range", function(d) {return lastTenDays[0].dayRange})
+     
+    
+
+   
+
+
+
+
+var svg = chartBlock.append("svg").attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+
+
+    var colorScaleLabel = d3
+          .scaleLinear()
+          .range(["#841c20","#D64045","#db5559","#e2797c","#aeaead","#79e2aa","#40d686","#33AB6B","#195535"])
+         .domain([-1,-.07,-.03,-.01,0,.01,.03,.07,1]);
+
+  
+  var label =  svg.append("g")
+    .attr("transform",
+          "translate(0," + margin.top + ")");
+
+  var g =  svg.append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+          label.append("text").attr("y",height-margin.bottom/2).attr("x",7.5).attr("class","stockLabel").text(stock) 
+
+
+          label.append("rect").attr("y",margin.top).attr("x",62).attr("width",47).attr("height",height - margin.top - margin.bottom+10).attr("class","stockLabelPriceBox") 
+          .style("rx", "4px").style("fill", function(d) {return colorScaleLabel(lastTenDays[0].change)})//{return (lastTenDays[0].change > 0) ? '#33AB6B' :'#D64045'; })
+
+          label.append("text").attr("y",height-margin.bottom/2).attr("x",85)
+          .attr("class",function(d) {var t= lastDayData[0].close; t= (Math.round((t + Number.EPSILON) * 100) / 100);if (t.toString().length<7){return "stockLabelPrice"} else {return "stockLabelPrice labelSm"}})
+          //.attr("class","stockLabelPrice") 
+          .text(function(d) {var t= lastDayData[0].close; return Math.round((t + Number.EPSILON) * 100) / 100})
+          .style("fill", "white")
+
+
+          label.append("text").attr("y",height-margin.bottom/2).attr("x",140).attr("class","stockLabelPrice") 
+          .text(function(d) {var t= lastDayData[0].change*100; var k = (Math.round((t + Number.EPSILON) * 100) / 100).toString();
+            if (k.length>1){k=k.replace(/^0+/, '')}; return k+"%"})
+          .style("fill", "black")
+
+          label.append("text").attr("y",height-margin.bottom/2).attr("x",195).attr("class","stockPriceRangeL") 
+          .text( Math.round((stockLow + Number.EPSILON) * 100) / 100)
+          
+          label.append("text").attr("y",height-margin.bottom/2).attr("x",203+width).attr("class","stockPriceRangeR") 
+          .text( Math.round((stockHigh + Number.EPSILON) * 100) / 100)   
+   
+
+ 
+
+    
+        var colorScale = d3
+          .scaleLinear()
+          .range(["#841c20","#D64045","#db5559","#e2797c","#e3e3e3","#79e2aa","#40d686","#33AB6B","#195535"])
+         .domain([-1,-.05,-.03,-.01,0,.01,.03,.05,1]);
+        //   .range(["#841c20","#D64045","#e2797c","#e3e3e3","#79e2aa","#40d686"])
+        //  .domain([-.1,-.005,0,.005,.1]);
+
+
+     chartBlock.selectAll("rect")
+      .data(lastTenDays)
+    .enter().append("svg").attr("width", height + margin.top + margin.bottom).attr("height", height + margin.top + margin.bottom).append("rect")
+      .style("fill", function(d) {return colorScale(d.change)})
+      .attr("x", 0)
+      .attr("width", height)
+      .attr("y", 10)
+      .attr("height", height);
+
+      chartBlock.append("div").attr("class","inline-text-cell").append("text").attr("class","inline-texts")
+      .text(function() {var t= lastDayData[0].putPremiumPercent*100; var k = (Math.round((t + Number.EPSILON) * 100) / 100).toString();
+            if (k.length>1){k=k.replace(/^0+/, '')}; return k+"%"})  
+
+      chartBlock.append("div").attr("class","inline-text-cell").append("text").attr("class","inline-texts")
+      .text(lastDayData[0].putWidth)
+
+      chartBlock.append("div").attr("class","inline-text-cell").append("text").attr("class","inline-texts")
+      .text(function() {var t= lastDayData[0].putIV*100; var k = (Math.round((t + Number.EPSILON) * 100) / 100).toString();
+            if (k.length>1){k=k.replace(/^0+/, '')}; return k+"%"})  
+
+      
+            
+
+    
+     g.selectAll("bar")
+      .data(lastDayData)
+    .enter().append("rect")
+      .style("fill", "#9ED8DB")
+      .attr("x", 0)
+      .attr("width", width)
+      .attr("y", 5)
+      .attr("height", height);
+
+
+      g.selectAll("bar")
+      .data(lastDayData)
+    .enter().append("rect")
+      .style("fill", "#c16e9d")
+      .attr("x", function(d) {return x(d.prevClose)-1; })
+      .attr("width", 2)
+      .attr("y", 5)
+      .attr("height", height);
+ 
+
+    g.selectAll("bar")
+      .data(lastDayData)
+    .enter().append("rect")
+      .style("fill", "#467599")
+      .attr("x", function(d) {return x(d.low); })
+      .attr("width", function(d) {return x(d.high)-x(d.low); })
+      .attr("y", 7.5)
+      .attr("height", height-5);
+
+
+
+
+      g.selectAll("bar")
+      .data(lastDayData)
+    .enter().append("rect")
+      .style("fill", "#9dc16e")
+      .attr("x", function(d) {return x(d.close)-2; })
+      .attr("width", 4)
+      .attr("y", 7.5)
+      .attr("height", height-5);
+
+
+
+
+
+    
+
+}
+
+	
+	</script>
+</html>
+
+
+
+
+
