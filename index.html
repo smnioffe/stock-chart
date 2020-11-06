@@ -159,6 +159,8 @@ lastTenDays.forEach(function(d,i) {
 });
 
 
+
+
      var chartBlock=d3.select("#stockChartWrapper").append("div").attr("class","stockChart")
      .attr("data-stock", function(d) {return stock})
      .attr("data-rank", function(d) {return x(lastDayData[0].close)})
@@ -195,7 +197,7 @@ var svg = chartBlock.append("svg").attr("width", width + margin.left + margin.ri
 
 
           label.append("rect").attr("y",margin.top).attr("x",62).attr("width",47).attr("height",height - margin.top - margin.bottom+10).attr("class","stockLabelPriceBox") 
-          .style("rx", "4px").style("fill", function(d) {return colorScaleLabel(lastTenDays[0].change)})//{return (lastTenDays[0].change > 0) ? '#33AB6B' :'#D64045'; })
+          .style("rx", "4px").style("fill", function(d) {  return colorScaleLabel(lastTenDays[0].change)})//{return (lastTenDays[0].change > 0) ? '#33AB6B' :'#D64045'; })
 
           label.append("text").attr("y",height-margin.bottom/2).attr("x",85)
           .attr("class",function(d) {var t= lastDayData[0].close; t= (Math.round((t + Number.EPSILON) * 100) / 100);if (t.toString().length<7){return "stockLabelPrice"} else {return "stockLabelPrice labelSm"}})
