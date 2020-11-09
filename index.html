@@ -58,7 +58,7 @@ data.forEach(function(d) {
         d.close = +d.Close;
         d.high= +d.High;
         d.low= +d.Low;
-        d.dayRange = +d.Close/d.High;
+        d.dayRange = (d.close-d.low)/(d.high-d.low+.0001);
         d.stock= d.Stock;
         d.putWidth=+d.putWidth;
         d.putPremium=+d.putPremium;
