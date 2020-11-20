@@ -2,7 +2,8 @@
     <head>
         <title>Stocks</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-		<link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:200,300,400,500,600,700|Saira+Semi+Condensed:200,300,400,500,600,700|Saira+Extra+Condensed:200,300,400,500,600,700" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
          <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="css/simon.css"/>
@@ -81,6 +82,11 @@ makeSingleStock(d,data)
 
 var $wrapper = $('#stockChartWrapper');
 
+
+d3.select("#stockChartWrapper").append("text").style("margin-left","58px").text("stock")
+d3.select("#stockChartWrapper").append("text").style("margin-left","21px").text("price")
+d3.select("#stockChartWrapper").append("text").style("margin-left","21px").text("% change")
+d3.select("#stockChartWrapper").append("text").style("margin-left","54px").text("90 day range")
 
 function softByRange(){
 $wrapper.find('.stockChart').sort(function(a, b) {
@@ -178,10 +184,12 @@ lastTenDays.forEach(function(d,i) {
 var svg = chartBlock.append("svg").attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
 
+ 
+
 
     var colorScaleLabel = d3
           .scaleLinear()
-          .range(["#841c20","#D64045","#db5559","#e2797c","#aeaead","#79e2aa","#40d686","#33AB6B","#195535"])
+          .range(["#92090D","#D64045","#F3686C","#FD9799","#aeaead","#87DD83","#5BC755","#3AAF34","#0D7707"])
          .domain([-1,-.07,-.03,-.01,0,.01,.03,.07,1]);
 
   
@@ -223,16 +231,15 @@ var svg = chartBlock.append("svg").attr("width", width + margin.left + margin.ri
     
         var colorScale = d3
           .scaleLinear()
-          .range(["#841c20","#D64045","#db5559","#e2797c","#e3e3e3","#79e2aa","#40d686","#33AB6B","#195535"])
+          .range(["#92090D","#D64045","#F3686C","#FD9799","#e3e3e3","#87DD83","#5BC755","#3AAF34","#0D7707"])
          .domain([-1,-.05,-.03,-.01,0,.01,.03,.05,1]);
-        //   .range(["#841c20","#D64045","#e2797c","#e3e3e3","#79e2aa","#40d686"])
-        //  .domain([-.1,-.005,0,.005,.1]);
-
+   
 
      chartBlock.selectAll("rect")
       .data(lastTenDays)
     .enter().append("svg").attr("width", height + margin.top + margin.bottom).attr("height", height + margin.top + margin.bottom).append("rect")
       .style("fill", function(d) {return colorScale(d.change)})
+      .style("opacity",.85)
       .attr("x", 0)
       .attr("width", height)
       .attr("y", 10)
@@ -256,31 +263,34 @@ var svg = chartBlock.append("svg").attr("width", width + margin.left + margin.ri
      g.selectAll("bar")
       .data(lastDayData)
     .enter().append("rect")
-      .style("fill", "#9ED8DB")
+      .style("fill", "none")
+      .style("stroke", "#8e9697")
+      .style("stroke-width","1px")
       .attr("x", 0)
       .attr("width", width)
       .attr("y", 5)
-      .attr("height", height);
+      .attr("height", height-1);
 
 
       g.selectAll("bar")
       .data(lastDayData)
     .enter().append("rect")
-      .style("fill", "#c16e9d")
+      .style("fill", "#545a5b")
       .attr("x", function(d) {return x(d.prevClose)-1; })
       .attr("width", 2)
       .attr("y", 5)
-      .attr("height", height);
+      .attr("height", height-1);
  
 
     g.selectAll("bar")
       .data(lastDayData)
     .enter().append("rect")
-      .style("fill", "#467599")
+      .style("fill", "#c1c5c6")
+      .style("opacity", .8)
       .attr("x", function(d) {return x(d.low); })
       .attr("width", function(d) {return x(d.high)-x(d.low); })
       .attr("y", 7.5)
-      .attr("height", height-5);
+      .attr("height", height-6);
 
 
 
@@ -288,11 +298,12 @@ var svg = chartBlock.append("svg").attr("width", width + margin.left + margin.ri
       g.selectAll("bar")
       .data(lastDayData)
     .enter().append("rect")
-      .style("fill", "#9dc16e")
+    .style("fill", function(d) {return colorScale(d.change)})
+      //.style("fill", "#383c3d")
       .attr("x", function(d) {return x(d.close)-2; })
       .attr("width", 4)
       .attr("y", 7.5)
-      .attr("height", height-5);
+      .attr("height", height-6);
 
 
 

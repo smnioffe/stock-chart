@@ -54,7 +54,7 @@ body {
 .fab {
 	width: 60px;
 	height: 60px;
-	background-color: #467599;
+	background-color: #8e9697;
 	border-radius: 50%;
 	box-shadow: 0 6px 10px 0 #666;
 	transition: all 0.1s ease-in-out;
@@ -78,6 +78,7 @@ body {
 
  .fab span{
 	font-size: 22px;
+	font-weight: 300;
 	padding-left:2.5px;
  }
 
@@ -91,10 +92,12 @@ body {
 }
  #sortPercentChange{
 	top:300px;
+	line-height: 65px;
 }
 
 #sortPutPremium{
 	top:390px;
+	line-height: 65px;
 }
 
 #updateTS{
@@ -106,7 +109,10 @@ body {
 }
 
 .inline-texts{
+	padding-top:3px;
 	text-anchor: middle;
+	font-size:14px;
+	vertical-align: middle;
 	
 }
 
@@ -115,5 +121,5 @@ body {
 	display:inline-block;
 	width: 50px;
 	height:30px;
-	padding-top:5px;
+	padding-top:10.5px;
 }
