@@ -198,20 +198,20 @@ def stok_data_pull():
 
 #one time
 
-#stok_data_pull()
+stok_data_pull()
 
 
 # In[24]:
 
 
-def get_stock_data():
-    threading.Timer(300.0, get_stock_data).start() # called every 5 minute
-    try:
-        stok_data_pull()
-    except:
-        pass
+# def get_stock_data():
+#     threading.Timer(300.0, get_stock_data).start() # called every 5 minute
+#     try:
+#         stok_data_pull()
+#     except:
+#         pass
 
-get_stock_data()
+#get_stock_data()
 
 
 # In[ ]:

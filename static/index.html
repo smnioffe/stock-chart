@@ -8,7 +8,8 @@
          <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="css/simon.css"/>
 		<link rel="stylesheet" type="text/css" href="css/custom.css"/>
-    <link rel='icon' href='/favicon.ico' type='image/x-icon'/>
+    <link rel='icon' href='favicon.ico' type='image/x-icon'/>
+    
 		<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -87,9 +88,9 @@ var $wrapper = $('#stockChartWrapper');
 
 
 d3.select("#stockChartWrapper").append("text").attr("class","headerText").style("margin-left","58px").text("stock")
-d3.select("#stockChartWrapper").append("text").attr("class","headerText").style("margin-left","21px").text("price")
-d3.select("#stockChartWrapper").append("text").attr("class","headerText").style("margin-left","21px").text("% change")
-d3.select("#stockChartWrapper").append("text").attr("class","headerText").style("margin-left","54px").text("90 day range")
+d3.select("#stockChartWrapper").append("text").attr("class","headerText").style("margin-left","23px").text("price")
+d3.select("#stockChartWrapper").append("text").attr("class","headerText").style("margin-left","33px").text("% change")
+d3.select("#stockChartWrapper").append("text").attr("class","headerText").style("margin-left","65px").text("90 day range")
 
 function softByRange(){
 $wrapper.find('.stockChart').sort(function(a, b) {
